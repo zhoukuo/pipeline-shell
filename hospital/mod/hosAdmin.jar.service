@@ -1,0 +1,15 @@
+
+[Unit]
+Description=hospital-hosadmin
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/hosadmin/
+ExecStart=/opt/hosadmin/servicectl.sh start 512m
+ExecReload=/opt/hosadmin/servicectl.sh restart 512m
+ExecStop=/opt/hosadmin/servicectl.sh stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

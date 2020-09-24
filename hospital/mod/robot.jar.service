@@ -1,0 +1,15 @@
+
+[Unit]
+Description=iop-robot
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/iop-robot/
+ExecStart=/opt/iop-robot/servicectl.sh start 1024m
+ExecReload=/opt/iop-robot/servicectl.sh restart 1024m
+ExecStop=/opt/iop-robot/servicectl.sh stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+
+[Unit]
+Description=mysql
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/mysql/mysql-5.7.28/bin/mysqld_safe /etc/my.cnf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

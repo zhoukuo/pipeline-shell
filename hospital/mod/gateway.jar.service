@@ -1,0 +1,15 @@
+
+[Unit]
+Description=hospital-gateway
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/gateway/
+ExecStart=/opt/gateway/servicectl.sh start 1024m
+ExecReload=/opt/gateway/servicectl.sh restart 1024m
+ExecStop=/opt/gateway/servicectl.sh stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

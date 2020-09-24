@@ -1,0 +1,31 @@
+# 医护签名服务依赖（联系运营人员索取）
+ca.clientid=xxxxxxxxxxxxxxxx
+ca.secret=xxxxxxxxxxxxxxxx
+
+# 医院编号，患者签名服务依赖，如果没有，可以为空（联系运营人员索取）
+hospital.no=
+
+# 院内数据库服务器IP（联系院方人员索取）
+db.ip=x.x.x.x
+
+# 医护签名和患者签名都部署在这台服务器上
+app1.ip=x.x.x.x
+
+# 同app1，备用节点，可选，如果没有，可以为空（联系院方人员索取，暂不支持）
+app2.ip=
+
+# nginx端口
+nginx.port=80
+
+# 部署包的服务器IP地址和端口
+repo.ip=47.95.231.203
+repo.port=8082
+
+# 仅用于测试人员切换环境，切勿修改！！！
+ywq.url=https://www.51trust.com
+cloud.domain=https://pubhos.51trust.com
+oss.bucketName=tms-production
+
+# 只用于配置服务时使用，不会修改数据库的密码，请与数据库实际信息保持一致
+db.user=root
+db.password=szyx123456

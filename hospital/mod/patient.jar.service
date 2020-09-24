@@ -1,0 +1,15 @@
+
+[Unit]
+Description=hospital-patient
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/patient/
+ExecStart=/opt/patient/servicectl.sh start 1024m
+ExecReload=/opt/patient/servicectl.sh restart 1024m
+ExecStop=/opt/patient/servicectl.sh stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

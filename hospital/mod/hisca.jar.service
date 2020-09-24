@@ -1,0 +1,15 @@
+
+[Unit]
+Description=hospital-hisca
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/hisca/
+ExecStart=/opt/hisca/servicectl.sh start 512m
+ExecReload=/opt/hisca/servicectl.sh restart 512m
+ExecStop=/opt/hisca/servicectl.sh stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

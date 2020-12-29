@@ -20,7 +20,7 @@ SOURCE_IP=${SOURCE_IP:=47.95.231.203}
 PORT=${PORT:=8082}
 
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function install_wget(){
@@ -41,7 +41,6 @@ function download() {
     wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/freelogin.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/disable.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/servicectl.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/initdb.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/deploy.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/service.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/verify.sh
@@ -73,16 +72,16 @@ function init() {
     SERVICE=$1
 
     mkdir -pv /opt/${SERVICE}/config
-    /bin/cp -f ./mod/application-custom.properties /opt/${SERVICE}/config
+    /bin/cp ./mod/application-custom.properties /opt/${SERVICE}/config
     sed -i "s/licenseId.*/licenseId=${CLIENTID}/" /opt/${SERVICE}/config/application-custom.properties
     sed -i "s/license.secret.*/license.secret=${SECRET}/" /opt/${SERVICE}/config/application-custom.properties
-    sed -i "s/0.0.0.0/${DBIP}/g" /opt/${SERVICE}/config/application-custom.properties
+    sed -i "s/0.0.0.0:6033/${DBIP}:6033/g" /opt/${SERVICE}/config/application-custom.properties
     sed -i "s#ywq.url.*#ywq.url=${HOST}#" /opt/${SERVICE}/config/application-custom.properties
     sed -i "s/spring.datasource.username.*/spring.datasource.username=${USER}/" /opt/${SERVICE}/config/application-custom.properties
     sed -i "s/spring.datasource.password.*/spring.datasource.password=${PASSWD}/" /opt/${SERVICE}/config/application-custom.properties
 
     mkdir -pv /opt/${SERVICE}/myconf
-    /bin/cp -f ./mod/redis.properties /opt/${SERVICE}/myconf
+    /bin/cp ./mod/redis.properties /opt/${SERVICE}/myconf
     sed -i "s/ywq.core.common.redis.host.*/ywq.core.common.redis.host=${DBIP}/" /opt/${SERVICE}/myconf/redis.properties
 
     cd $CURRENT_DIR
@@ -90,31 +89,31 @@ function init() {
 
 function check_license() {
      if [[ ! -f "license" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license file not found !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license file not found !!!\e[00m"
         exit -1
     fi
 
     # required
     if [[ "$CLIENTID" == "xxxxxxxxxxxxxxxx" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license info invalid: ca.clientid !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: ca.clientid !!!\e[00m"
         exit -1
     fi
 
     # required
     if [[ "$SECRET" == "xxxxxxxxxxxxxxxx" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license info invalid: ca.secret !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: ca.secret !!!\e[00m"
         exit -1
     fi
 
     # required
     if [[ "$DBIP" == "x.x.x.x" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license info invalid: db.ip !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: db.ip !!!\e[00m"
         exit -1
     fi
 
     # required, but not block at current stage
     if [[ "$APP1_IP" == "x.x.x.x" ]]; then
-        echo -e "$TIMESTAMP - \e[00;33m[WARNING] license info invalid: app1.ip !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;33m[WARNING] license info invalid: app1.ip !!!\e[00m"
     fi
 }
 
@@ -123,7 +122,7 @@ function main() {
 
     # used for offline deploy
     if [[ "$PARAM1" == "-d" ]]; then
-        echo -e "$TIMESTAMP - downloading ... "
+        echo -e "`date '+%D %T'` - downloading ... "
         download
         exit 0
     fi
@@ -134,30 +133,30 @@ function main() {
         download
     fi
 
-    echo -e "$TIMESTAMP - check license ..."
+    echo -e "`date '+%D %T'` - check license ..."
     check_license
 
-    echo -e "$TIMESTAMP - init linux ..."
+    echo -e "`date '+%D %T'` - init linux ..."
     ./mod/disable.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - set hosts ..."
+    echo -e "`date '+%D %T'` - set hosts ..."
     ./mod/sethosts.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install jdk ..."
+    echo -e "`date '+%D %T'` - install jdk ..."
     ./mod/jdk.install.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install bjcaroot ..."
+    echo -e "`date '+%D %T'` - install bjcaroot ..."
     ./mod/bjcaroot.install.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install gateway ..."
+    echo -e "`date '+%D %T'` - install gateway ..."
     init gateway
     ./mod/gateway.deploy.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install hisca ..."
+    echo -e "`date '+%D %T'` - install hisca ..."
     init hisca
     ./mod/hisca.deploy.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install iop-robot ..."
+    echo -e "`date '+%D %T'` - install iop-robot ..."
     ./mod/robot.deploy.sh $DEST_IP
 
 }

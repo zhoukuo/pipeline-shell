@@ -10,6 +10,7 @@ ExecStart=/opt/patient/servicectl.sh start 1024m
 ExecReload=/opt/patient/servicectl.sh restart 1024m
 ExecStop=/opt/patient/servicectl.sh stop
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

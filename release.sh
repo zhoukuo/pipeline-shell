@@ -7,16 +7,20 @@ latest=$4
 
 timestamp=`date +"%Y/%m/%d %H:%M:%S"`
 
-if [[ "$dest_ip" == "47.95.231.203" ]]; then
+if [[ "$dest_ip" == "192.168.1.17" ]]; then
     port=22222
-    showip=$dest_ip
+    showip="47.95.231.203"
+elif [[ "$dest_ip" == "47.95.231.203" ]]; then
+    port=22222
+    showip="47.95.231.203"
 elif [[ "$dest_ip" == "192.168.126.39" ]]; then
     port=22
     showip=$dest_ip
 else
-    echo "文件服务器IP有误！[192.168.122.39/47.95.231.203]"
+    echo "文件服务器IP有误！[192.168.126.39/192.168.1.17]"
     exit -1
 fi
+
 
 ls $source_dir -lh
 
@@ -55,7 +59,7 @@ if [[ "$latest" == "yes" ]];then
             mkdir -pv ${dest_dir%/*}/sql
             cd ${dest_dir%/*}/sql
             rm *-full-*.sql
-            cp -fp ${dest_dir%/*}/latest/sql/*.sql .
+            /bin/cp ${dest_dir%/*}/latest/sql/*.sql .
         fi
         
     exit "

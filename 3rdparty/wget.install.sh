@@ -8,27 +8,31 @@ APP_NAME=wget
 # 从哪个服务器获取服务包，不要修改
 SOURCE_DIR=release/3rdparty/wget
 # 从哪个目录获取服务包，不要修改
-SOURCE_IP=47.95.231.203
+SOURCE_IP=`cat license | grep repo.ip | awk -F = '{print $2}'`
+PORT=`cat license | grep repo.port | awk -F = '{print $2}'`
+# set default value if SOURCE_IP or PORT is null
+SOURCE_IP=${SOURCE_IP:=47.95.231.203}
+PORT=${PORT:=8082}
 
 USER=`whoami`
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function verify_version() {
     VERSION=`wget -V |head -1|awk '{print $3}'`
     if [[ $VERSION == "1.20.3" ]]; then
-        echo -e "$TIMESTAMP - wget is up to date ..."
+        echo -e "`date '+%D %T'` - wget is up to date ..."
         exit 0
     else
-        echo -e "$TIMESTAMP - wget will update to version 1.20.3 ..."
+        echo -e "`date '+%D %T'` - wget will update to version 1.20.3 ..."
     fi
 }
 
 function verify_user() {
-    echo -e "$TIMESTAMP - verify user ..."; 
+    echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$USER" != "root" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mplease run as root user!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mplease run as root user!\e[00m"
         exit -1
     fi
 }
@@ -38,10 +42,10 @@ function get_pkg() {
     cd $CURRENT_DIR/pkg
 
     if [[ ! -f "$APP_NAME" ]]; then
-        echo -e "$TIMESTAMP - $APP_NAME not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/$SOURCE_DIR/$APP_NAME
+        echo -e "`date '+%D %T'` - $APP_NAME not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/$SOURCE_DIR/$APP_NAME
     else
-        echo -e "$TIMESTAMP - $APP_NAME is found, install from local ..."
+        echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
 
     cd $CURRENT_DIR
@@ -49,7 +53,7 @@ function get_pkg() {
 
 function install_local() {
     cd $CURRENT_DIR
-    cp -f pkg/wget $DEST_DIR
+    /bin/cp pkg/wget $DEST_DIR
     cd $DEST_DIR
     chmod 755 wget
     pwd

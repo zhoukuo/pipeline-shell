@@ -13,25 +13,29 @@ APP_NAME=nginx-1.16.1.tar.gz
 # 从哪个服务器获取服务包，不要修改
 SOURCE_DIR=release/3rdparty/nginx
 # 从哪个目录获取服务包，不要修改
-SOURCE_IP=47.95.231.203
+SOURCE_IP=`cat license | grep repo.ip | awk -F = '{print $2}'`
+PORT=`cat license | grep repo.port | awk -F = '{print $2}'`
+# set default value if SOURCE_IP or PORT is null
+SOURCE_IP=${SOURCE_IP:=47.95.231.203}
+PORT=${PORT:=8082}
 
 USER=`whoami`
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function verify_user() {
-    echo -e "$TIMESTAMP - verify user ..."; 
+    echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$USER" != "root" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mplease run as root user!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mplease run as root user!\e[00m"
         exit -1
     fi
 }
 
 function verify_parameter() {
-    echo -e "$TIMESTAMP - verify parameter ..."
+    echo -e "`date '+%D %T'` - verify parameter ..."
     if [[ "$NGINX_PORT" == "" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mparameter not found, sh nginx.install.sh <nginx_ip> <app1_ip> <app2_ip> <hos_no> <nginx_port>\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mparameter not found, sh nginx.install.sh <nginx_ip> <app1_ip> <app2_ip> <hos_no> <nginx_port>\e[00m"
         exit -1
     fi
 }
@@ -41,10 +45,10 @@ function get_pkg() {
     cd $CURRENT_DIR/pkg
 
     if [[ ! -f "$APP_NAME" ]]; then
-        echo -e "$TIMESTAMP - $APP_NAME not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/$SOURCE_DIR/$APP_NAME
+        echo -e "`date '+%D %T'` - $APP_NAME not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/$SOURCE_DIR/$APP_NAME
     else
-        echo -e "$TIMESTAMP - $APP_NAME is found, install from local ..."
+        echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
     cd $CURRENT_DIR
 }
@@ -54,17 +58,17 @@ function get_mod() {
     cd $CURRENT_DIR/mod
 
     if [[ ! -f "freelogin.sh" ]]; then
-        echo -e "$TIMESTAMP - freelogin.sh not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/utils/freelogin.sh
+        echo -e "`date '+%D %T'` - freelogin.sh not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/devops/utils/freelogin.sh
     else
-        echo -e "$TIMESTAMP - freelogin.sh is found ..."
+        echo -e "`date '+%D %T'` - freelogin.sh is found ..."
     fi
 
     if [[ ! -f "nginx.service" ]]; then
-        echo -e "$TIMESTAMP - nginx.service not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/3rdparty/nginx.service
+        echo -e "`date '+%D %T'` - nginx.service not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/devops/3rdparty/nginx.service
     else
-        echo -e "$TIMESTAMP - nginx.service is found ..."
+        echo -e "`date '+%D %T'` - nginx.service is found ..."
     fi
 
     chmod 755 *.sh
@@ -73,10 +77,10 @@ function get_mod() {
 }
 
 function install_local() {
-    echo -e "$TIMESTAMP - remove old nginx ..."
+    echo -e "`date '+%D %T'` - remove old nginx ..."
     yum remove nginx -y >/dev/null 2>&1
 
-    echo -e "$TIMESTAMP - add user and group ..."
+    echo -e "`date '+%D %T'` - add user and group ..."
     groupadd nginx >/dev/null 2>&1
     useradd -g nginx nginx >/dev/null 2>&1
 
@@ -86,7 +90,8 @@ function install_local() {
     tar -xf ./pkg/$APP_NAME -C $DEST_DIR
     chown -R nginx:nginx $DEST_DIR
     cd $DEST_DIR/nginx*
-    echo -e "$TIMESTAMP - NGINX_HOME=`pwd`"
+    /bin/cp logrotate/nginx /etc/logrotate.d/
+    echo -e "`date '+%D %T'` - NGINX_HOME=`pwd`"
     ln -sf `pwd`/sbin/nginx /usr/bin/nginx
 
     if [[ "$APP1" != "0" ]]; then
@@ -113,29 +118,31 @@ function install_local() {
     fi
 
     # set auto start when server start
-    echo -e "$TIMESTAMP - nginx starting ...\n"
+    echo -e "`date '+%D %T'` - nginx starting ...\n"
     pkill nginx
     sleep 1s
-    cp $CURRENT_DIR/mod/nginx.service /usr/lib/systemd/system/
+    /bin/cp $CURRENT_DIR/mod/nginx.service /usr/lib/systemd/system/
     systemctl daemon-reload
     systemctl enable nginx.service
     systemctl start nginx.service
     sleep 1s
     systemctl status nginx.service
 
+    # schedule to cleanup logs
+    (crontab -l;echo '0 2 * * * rm `ls -t /usr/local/nginx/nginx-1.16.1/logs | tail -n +15`')| crontab
     ss -lnp | grep "*:$NGINX_PORT "
     if [[ "$?" != "0" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mnginx installed failed!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mnginx installed failed!\e[00m"
         exit -1
     fi
 
-    echo -e "\n$TIMESTAMP - curl $DEST_IP:$NGINX_PORT ..."
+    echo -e "\n`date '+%D %T'` - curl $DEST_IP:$NGINX_PORT ..."
     curl $DEST_IP:$NGINX_PORT 2>&1 |grep '<title>Welcome to nginx!</title>'
 
     if [[ "$?" == "0" ]]; then
-        echo -e "$TIMESTAMP - \e[00;32mnginx installed successfully!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;32mnginx installed successfully!\e[00m"
     else
-        echo -e "$TIMESTAMP - \e[00;31mnginx installed failed!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mnginx installed failed!\e[00m"
     fi
 
     cd $CURRENT_DIR
@@ -146,26 +153,26 @@ function install_remote() {
     cd $CURRENT_DIR
     ./mod/freelogin.sh $DEST_IP
 
-    #check PORT
+    #check port
     ssh -q -o ConnectTimeout=3 root@$DEST_IP -p22222 "exit"
     if [ "$?" == "0" ]; then
-        PORT=22222
+        port=22222
     else
-        PORT=22
+        port=22
     fi
-    echo "$TIMESTAMP - ssh PORT:$PORT"
+    echo "`date '+%D %T'` - ssh port:$port"
 
-    ssh root@$DEST_IP -p$PORT "
+    ssh root@$DEST_IP -p$port "
         mkdir tmp -pv
     "
-    echo -e "$TIMESTAMP - copy $APP_NAME to $DEST_IP"
+    echo -e "`date '+%D %T'` - copy $APP_NAME to $DEST_IP"
     scp ./pkg/$APP_NAME ./mod/nginx.service root@$DEST_IP:/root/tmp
 
-    ssh root@$DEST_IP -p$PORT "
-        echo -e \"$TIMESTAMP - remove old nginx ...\"
+    ssh root@$DEST_IP -p$port "
+        echo -e \"`date '+%D %T'` - remove old nginx ...\"
         yum remove nginx -y >/dev/null 2>&1
 
-        echo -e \"$TIMESTAMP - add user and group ...\"
+        echo -e \"`date '+%D %T'` - add user and group ...\"
         groupadd nginx >/dev/null 2>&1
         useradd -g nginx nginx >/dev/null 2>&1
 
@@ -175,7 +182,8 @@ function install_remote() {
         tar -xf $APP_NAME -C $DEST_DIR
         chown -R nginx:nginx $DEST_DIR
         cd $DEST_DIR/nginx*
-        echo -e \"$TIMESTAMP - NGINX_HOME=\`pwd\`\"
+        /bin/cp logrotate/nginx /etc/logrotate.d/
+        echo -e \"`date '+%D %T'` - NGINX_HOME=\`pwd\`\"
         ln -sf \`pwd\`/sbin/nginx /usr/bin/nginx
 
         if [[ \"\$APP1\" != \"0\" ]]; then
@@ -202,10 +210,10 @@ function install_remote() {
             sed -i \"s/listen                  80;/listen                  \$NGINX_PORT;/g\" ./conf/nginx.conf
 
         # set auto start when server start
-        echo -e \"$TIMESTAMP - nginx starting ...\n\"
+        echo -e \"`date '+%D %T'` - nginx starting ...\n\"
         pkill nginx
         sleep 1s
-        cp /root/tmp/nginx.service /usr/lib/systemd/system/
+        /bin/cp /root/tmp/nginx.service /usr/lib/systemd/system/
         systemctl daemon-reload
         systemctl enable nginx.service
         systemctl start nginx.service
@@ -214,17 +222,17 @@ function install_remote() {
 
         ss -lnp | grep "*:\$NGINX_PORT "
         if [[ \"\$?\" != \"0\" ]]; then
-            echo -e \"$TIMESTAMP - \e[00;31mnginx installed failed!\e[00m\"
+            echo -e \"`date '+%D %T'` - \e[00;31mnginx installed failed!\e[00m\"
             exit -1
         fi
 
-        echo -e \"\n$TIMESTAMP - curl $DEST_IP:\$NGINX_PORT ...\"
+        echo -e \"\n`date '+%D %T'` - curl $DEST_IP:\$NGINX_PORT ...\"
         curl $DEST_IP:\$NGINX_PORT 2>&1 |grep '<title>Welcome to nginx!</title>'
 
         if [[ \"\$?\" == \"0\" ]]; then
-            echo -e \"$TIMESTAMP - \e[00;32mnginx installed successfully!\e[00m\"
+            echo -e \"`date '+%D %T'` - \e[00;32mnginx installed successfully!\e[00m\"
         else
-            echo -e \"$TIMESTAMP - \e[00;31mnginx installed failed!\e[00m\"
+            echo -e \"`date '+%D %T'` - \e[00;31mnginx installed failed!\e[00m\"
         fi
     "
 
@@ -233,10 +241,10 @@ function install_remote() {
 
 function install_pkg() {
     if [[ $DEST_IP == "127.0.0.1" ]]; then
-        echo -e "$TIMESTAMP - deploy to localhost ..."
+        echo -e "`date '+%D %T'` - deploy to localhost ..."
         install_local
     else
-        echo -e "$TIMESTAMP - deploy to $DEST_IP ..."
+        echo -e "`date '+%D %T'` - deploy to $DEST_IP ..."
         install_remote
     fi
 }

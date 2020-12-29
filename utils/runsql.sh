@@ -6,24 +6,29 @@ USER=$2
 PASSWD=$3
 SQL=$4
 
-SOURCE_IP=47.95.231.203
+SOURCE_IP=`cat license | grep repo.ip | awk -F = '{print $2}'`
+PORT=`cat license | grep repo.port | awk -F = '{print $2}'`
+# set default value if SOURCE_IP or PORT is null
+SOURCE_IP=${SOURCE_IP:=47.95.231.203}
+PORT=${PORT:=8082}
+
 CURRENT_USER=`whoami`
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function verify_user() {
-    echo -e "$TIMESTAMP - verify user ..."; 
+    echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$CURRENT_USER" != "root" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mplease run as root user!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mplease run as root user!\e[00m"
         exit -1
     fi
 }
 
 function verify_parameter() {
-    echo -e "$TIMESTAMP - verify parameter ..."
+    echo -e "`date '+%D %T'` - verify parameter ..."
     if [[ "$SQL" == "" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mparameter not found, source runsql.sh <ip> <user> <passwd> <sql>\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mparameter not found, source runsql.sh <ip> <user> <passwd> <sql>\e[00m"
         exit -1
     fi
 }
@@ -33,10 +38,10 @@ function get_mod() {
     cd $CURRENT_DIR/mod
 
     if [[ ! -f "mysqlc.install.sh" ]]; then
-        echo -e "$TIMESTAMP - mysqlc.install.sh not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/3rdparty/mysqlc.install.sh
+        echo -e "`date '+%D %T'` - mysqlc.install.sh not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/devops/3rdparty/mysqlc.install.sh
     else
-        echo -e "$TIMESTAMP - freelogin.sh is found ..."
+        echo -e "`date '+%D %T'` - freelogin.sh is found ..."
     fi
 
     chmod 755 *.sh
@@ -49,10 +54,10 @@ function get_pkg() {
     cd $CURRENT_DIR/pkg
 
     if [[ ! -f "mysql" ]]; then
-        echo -e "$TIMESTAMP - mysql not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/3rdparty/mysql/mysql
+        echo -e "`date '+%D %T'` - mysql not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/devops/3rdparty/mysql/mysql
     else
-        echo -e "$TIMESTAMP - $APP_NAME is found, install from local ..."
+        echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
     cd $CURRENT_DIR
 }

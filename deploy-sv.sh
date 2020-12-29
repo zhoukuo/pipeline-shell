@@ -61,7 +61,7 @@ ssh root@$dest_ip -p$port "
             rm -fr *.sh
             rm -fr template*
         else
-            ls | grep -v "initdb.sh" | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | grep -v "template" | xargs rm -fr
+            ls | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | grep -v "template" | xargs rm -fr
         fi
         
         echo -e "$timestamp - 获取部署包: http://$show_ip:8082/#//$source_dir" 
@@ -115,7 +115,7 @@ ssh root@$dest_ip -p$port "
         cd tmp
         rm ** -fr
         jar -xf ../${app_name}
-        cp -fr ../patch/* .
+        /bin/cp -r ../patch/* .
         jar -cfm0 ${app_name} META-INF/MANIFEST.MF .
         mv ${app_name} ../
         cd ../

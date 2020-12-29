@@ -6,10 +6,11 @@ After=network.target
 [Service]
 Type=forking
 WorkingDirectory=/opt/hisca/
-ExecStart=/opt/hisca/servicectl.sh start 512m
-ExecReload=/opt/hisca/servicectl.sh restart 512m
+ExecStart=/opt/hisca/servicectl.sh start 1024m
+ExecReload=/opt/hisca/servicectl.sh restart 1024m
 ExecStop=/opt/hisca/servicectl.sh stop
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

@@ -10,6 +10,7 @@ ExecStart=/opt/hosadmin/servicectl.sh start 512m
 ExecReload=/opt/hosadmin/servicectl.sh restart 512m
 ExecStop=/opt/hosadmin/servicectl.sh stop
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

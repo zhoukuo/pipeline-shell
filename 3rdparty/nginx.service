@@ -9,6 +9,7 @@ ExecStart=/usr/local/nginx/nginx-1.16.1/sbin/nginx -c /usr/local/nginx/nginx-1.1
 ExecReload=/usr/local/nginx/nginx-1.16.1/sbin/nginx -s reload
 ExecStop=/usr/local/nginx/nginx-1.16.1/sbin/nginx -s quit
 PrivateTmp=true
-  
+Restart=on-failure
+
 [Install]
 WantedBy=multi-user.target

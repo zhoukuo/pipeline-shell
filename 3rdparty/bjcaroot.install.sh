@@ -10,25 +10,29 @@ APP_NAME=bjcaroot.tar.gz
 # 从哪个服务器获取服务包，不要修改
 SOURCE_DIR=release/3rdparty/bjcaroot
 # 从哪个目录获取服务包，不要修改
-SOURCE_IP=47.95.231.203
+SOURCE_IP=`cat license | grep repo.ip | awk -F = '{print $2}'`
+PORT=`cat license | grep repo.port | awk -F = '{print $2}'`
+# set default value if SOURCE_IP or PORT is null
+SOURCE_IP=${SOURCE_IP:=47.95.231.203}
+PORT=${PORT:=8082}
 
 USER=`whoami`
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function verify_user() {
-    echo -e "$TIMESTAMP - verify user ..."; 
+    echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$USER" != "root" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mplease run as root user!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mplease run as root user!\e[00m"
         exit -1
     fi
 }
 
 function verify_parameter() {
-    echo -e "$TIMESTAMP - verify parameter ..."
+    echo -e "`date '+%D %T'` - verify parameter ..."
     if [[ "$DEST_IP" == "" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mparameter not found, source jdk.install.sh <ip>\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mparameter not found, source jdk.install.sh <ip>\e[00m"
         exit -1
     fi
 }
@@ -38,10 +42,10 @@ function get_pkg() {
     cd $CURRENT_DIR/pkg
 
     if [[ ! -f "$APP_NAME" ]]; then
-        echo -e "$TIMESTAMP - $APP_NAME not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/$SOURCE_DIR/$APP_NAME
+        echo -e "`date '+%D %T'` - $APP_NAME not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/$SOURCE_DIR/$APP_NAME
     else
-        echo -e "$TIMESTAMP - $APP_NAME is found, install from local ..."
+        echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
 
     cd $CURRENT_DIR
@@ -52,10 +56,10 @@ function get_mod() {
     cd $CURRENT_DIR/mod
 
     if [[ ! -f "freelogin.sh" ]]; then
-        echo -e "$TIMESTAMP - freelogin.sh not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/utils/freelogin.sh
+        echo -e "`date '+%D %T'` - freelogin.sh not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/devops/utils/freelogin.sh
     else
-        echo -e "$TIMESTAMP - freelogin.sh is found ..."
+        echo -e "`date '+%D %T'` - freelogin.sh is found ..."
     fi
 
     chmod 755 *.sh
@@ -80,22 +84,22 @@ function install_remote() {
     
     ./mod/freelogin.sh $DEST_IP
 
-    #check PORT
+    #check port
     ssh -q -o ConnectTimeout=3 root@$DEST_IP -p22222 "exit"
     if [ "$?" == "0" ]; then
-        PORT=22222
+        port=22222
     else
-        PORT=22
+        port=22
     fi
-    echo "$TIMESTAMP - ssh PORT:$PORT"
+    echo "`date '+%D %T'` - ssh port:$port"
 
-    ssh root@$DEST_IP -p$PORT "
+    ssh root@$DEST_IP -p$port "
         mkdir tmp -pv
     "
-    echo -e "$TIMESTAMP - copy $APP_NAME to $DEST_IP"
+    echo -e "`date '+%D %T'` - copy $APP_NAME to $DEST_IP"
     scp ./pkg/$APP_NAME root@$DEST_IP:/root/tmp
 
-    ssh root@$DEST_IP -p$PORT "
+    ssh root@$DEST_IP -p$port "
         cd tmp
         rm $DEST_DIR -fr
         mkdir $DEST_DIR
@@ -110,10 +114,10 @@ function install_remote() {
 
 function install_pkg() {
     if [[ $DEST_IP == "127.0.0.1" ]]; then
-        echo -e "$TIMESTAMP - deploy to localhost ..."
+        echo -e "`date '+%D %T'` - deploy to localhost ..."
         install_local
     else
-        echo -e "$TIMESTAMP - deploy to $DEST_IP ..."
+        echo -e "`date '+%D %T'` - deploy to $DEST_IP ..."
         install_remote
     fi
 }

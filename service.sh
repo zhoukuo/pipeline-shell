@@ -15,9 +15,9 @@ start() {
     fi
     # 兼容systemd
     if [[ $SERVICE_DIR == "/" ]]; then 
-        nohup java -Xms$JVM_HEAP -Xmx$JVM_HEAP -XX:PermSize=256m -jar $SERVICE_NAME >> $SERVICE_DIR/catlina.out 2>&1 &
+        nohup java -Xms$JVM_HEAP -Xmx$JVM_HEAP -XX:PermSize=256m -jar $SERVICE_NAME > /dev/null 2>&1 &
     else
-        nohup java -Xms$JVM_HEAP -Xmx$JVM_HEAP -XX:PermSize=256m -jar $SERVICE_DIR/$SERVICE_NAME >> $SERVICE_DIR/catlina.out 2>&1 &
+        nohup java -Xms$JVM_HEAP -Xmx$JVM_HEAP -XX:PermSize=256m -jar $SERVICE_DIR/$SERVICE_NAME > /dev/null 2>&1 &
     fi
 }
 
@@ -41,7 +41,6 @@ stop() {
 
     # timeout, return -1
     echo -e "$timestamp - 停止服务失败 ..."
-    tailf catlina.out
     exit -1
 }
 

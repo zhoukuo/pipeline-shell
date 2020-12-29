@@ -5,8 +5,9 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/mysql/mysql-5.7.28/bin/mysqld_safe /etc/my.cnf
+ExecStart=/usr/local/mysql/mysql-5.7.31/bin/mysqld_safe /etc/my.cnf
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

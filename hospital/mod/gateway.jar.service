@@ -10,6 +10,7 @@ ExecStart=/opt/gateway/servicectl.sh start 1024m
 ExecReload=/opt/gateway/servicectl.sh restart 1024m
 ExecStop=/opt/gateway/servicectl.sh stop
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

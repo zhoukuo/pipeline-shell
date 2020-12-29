@@ -18,7 +18,7 @@ PORT=${PORT:=8082}
 VERSION=latest
 NGINX=nginx-1.16.1.tar.gz
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 
 
 function install_wget(){
@@ -44,7 +44,6 @@ function download() {
     wget -N http://$SOURCE_IP:$PORT/shared/devops/deploy.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/service.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/servicectl.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/utils/initdb.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/verify.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/3rdparty/nginx.service
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/webAdmin.tar.gz.service
@@ -60,24 +59,24 @@ function download() {
 function check_license() {
     # required
     if [[ ! -f "license" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license file not found !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license file not found !!!\e[00m"
         exit -1
     fi
 
     # required
     if [[ "$APP1_IP" == "x.x.x.x" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31m[ERROR] license info invalid: app1.ip !!!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: app1.ip !!!\e[00m"
         exit -1
     fi
 
     # optional
     if [[ "$HOS_NO" == "" ]]; then
-        echo -e "$TIMESTAMP - \e[00;33m[WARNING] license: hospital.no is required for patient service\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;33m[WARNING] license: hospital.no is required for patient service\e[00m"
     fi
     
     # optional
     # if [[ "$APP2_IP" == "" ]]; then
-    #     echo -e "$TIMESTAMP - \e[00;33m[INFO] license: app2.ip is required if 2 app node\e[00m"
+    #     echo -e "`date '+%D %T'` - \e[00;33m[INFO] license: app2.ip is required if 2 app node\e[00m"
     # fi
 }
 
@@ -87,7 +86,7 @@ function main() {
 
     # used for offline deploy
     if [[ "$PARAM1" == "-d" ]]; then
-        echo -e "$TIMESTAMP - downloading ... "
+        echo -e "`date '+%D %T'` - downloading ... "
         download
         exit 0
     fi
@@ -98,19 +97,19 @@ function main() {
         download
     fi
     
-    echo -e "$TIMESTAMP - check license ..."
+    echo -e "`date '+%D %T'` - check license ..."
     check_license
 
-    echo -e "$TIMESTAMP - init linux ..."
+    echo -e "`date '+%D %T'` - init linux ..."
     ./mod/disable.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - set hosts ..."
+    echo -e "`date '+%D %T'` - set hosts ..."
     ./mod/sethosts.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install webAdmin.tar.gz ..."
+    echo -e "`date '+%D %T'` - install webAdmin.tar.gz ..."
     ./mod/view.deploy.sh $DEST_IP
 
-    echo -e "$TIMESTAMP - install nginx ..."
+    echo -e "`date '+%D %T'` - install nginx ..."
     # 这里必须用sh调用，否则shell进程会被结束
     sh ./mod/nginx.install.sh ${DEST_IP:=0} ${APP1_IP:=0} ${APP2_IP:=0} ${HOS_NO:=0} ${NGINX_PORT:=80}
 }

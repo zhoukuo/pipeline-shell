@@ -10,14 +10,14 @@ JVM_HEAP=$7
 
 USER=`whoami`
 CURRENT_DIR=`pwd`
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
 TOMCAT_HOME=${DEST_DIR%/*}
 
 
 function verify_user() {
-    echo -e "$TIMESTAMP - verify user ..."; 
+    echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$USER" != "root" ]]; then
-        echo -e "$TIMESTAMP - \e[00;31mplease run as root user!\e[00m"
+        echo -e "`date '+%D %T'` - \e[00;31mplease run as root user!\e[00m"
         exit -1
     fi
 }
@@ -25,12 +25,12 @@ function verify_user() {
 function verify_parameter() {
 
     if [[ "$APP_TYPE" != "spring_boot" ]] && [[ "$APP_TYPE" != "tomcat" ]] && [[ "$APP_TYPE" != "static" ]]; then
-        echo -e "$TIMESTAMP - 应用类型错误！[spring_boot/tomcat/static]"
+        echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
         exit -1
     fi
 
     if [[ "$SOURCE_IP" != "47.95.231.203" ]] && [[ "$SOURCE_IP" != "192.168.1.17" ]] && [[ "$SOURCE_IP" != "192.168.126.39" ]]; then
-        echo -e "$TIMESTAMP - 文件服务器IP有误！[47.95.231.203/192.168.1.17/192.168.126.39]"
+        echo -e "`date '+%D %T'` - 文件服务器IP有误！[47.95.231.203/192.168.1.17/192.168.126.39]"
         exit -1
     fi
 
@@ -54,45 +54,38 @@ function get_mod() {
     cd $CURRENT_DIR/mod
 
     if [[ ! -f "$APP_NAME.service" ]]; then
-        echo -e "$TIMESTAMP - $APP_NAME.service not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - $APP_NAME.service not found in local, downloading ..."
         wget http://$SOURCE_IP:8082/shared/devops/hospital/mod/$APP_NAME.service
     else
-        echo -e "$TIMESTAMP - $APP_NAME.service is found ..."
+        echo -e "`date '+%D %T'` - $APP_NAME.service is found ..."
     fi
 
     if [[ ! -f "freelogin.sh" ]]; then
-        echo -e "$TIMESTAMP - freelogin.sh not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - freelogin.sh not found in local, downloading ..."
         wget http://$SOURCE_IP:8082/shared/devops/utils/freelogin.sh
     else
-        echo -e "$TIMESTAMP - freelogin.sh is found ..."
+        echo -e "`date '+%D %T'` - freelogin.sh is found ..."
     fi
 
     if [[ ! -f "servicectl.sh" ]]; then
-        echo -e "$TIMESTAMP - servicectl.sh not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - servicectl.sh not found in local, downloading ..."
         wget http://$SOURCE_IP:8082/shared/devops/utils/servicectl.sh
     else
-        echo -e "$TIMESTAMP - servicectl.sh is found ..."
+        echo -e "`date '+%D %T'` - servicectl.sh is found ..."
     fi
 
     if [[ ! -f "service.sh" ]]; then
-        echo -e "$TIMESTAMP - service.sh not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - service.sh not found in local, downloading ..."
         wget http://$SOURCE_IP:8082/shared/devops/service.sh
     else
-        echo -e "$TIMESTAMP - service.sh is found ..."
+        echo -e "`date '+%D %T'` - service.sh is found ..."
     fi
 
     if [[ ! -f "verify.sh" ]]; then
-        echo -e "$TIMESTAMP - verify.sh not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - verify.sh not found in local, downloading ..."
         wget http://$SOURCE_IP:8082/shared/devops/verify.sh
     else
-        echo -e "$TIMESTAMP - verify.sh is found ..."
-    fi
-
-    if [[ ! -f "initdb.sh" ]]; then
-        echo -e "$TIMESTAMP - initdb.sh not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/utils/initdb.sh
-    else
-        echo -e "$TIMESTAMP - initdb.sh is found ..."
+        echo -e "`date '+%D %T'` - verify.sh is found ..."
     fi
 
     chmod 755 *.sh
@@ -117,13 +110,13 @@ function get_pkg() {
     cd $CURRENT_DIR/pkg
 
     if [[ ! -f "$APP_NAME" ]]; then
-        echo -e "$TIMESTAMP - $APP_NAME not found in local, downloading ..."
+        echo -e "`date '+%D %T'` - $APP_NAME not found in local, downloading ..."
     else
-        echo -e "$TIMESTAMP - $APP_NAME is found, install from local ..."
+        echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
 
     # 比较最后修改时间，如果比当前文件新，就重新下载
-    echo -e "$TIMESTAMP - try to download package the latest version ..."
+    echo -e "`date '+%D %T'` - try to download package of the latest version ..."
     wget -N -T2 -t1 http://$SOURCE_IP:8082/shared/$SOURCE_DIR/$APP_NAME
     cd $CURRENT_DIR
 }
@@ -133,19 +126,19 @@ function install_local() {
     mkdir -pv $DEST_DIR
     cd $DEST_DIR
 
-    echo -e "$TIMESTAMP - 清理环境，保留日志和本地配置 ..."
+    echo -e "`date '+%D %T'` - 清理环境，保留日志和本地配置 ..."
     if [[ "$APP_TYPE" == "tomcat" ]]; then
         rm -fr ${APP_NAME%.*}*
         rm -fr build-*
         rm -fr *.sh
         rm -fr template*
     else
-        ls | grep -v "initdb.sh" | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | xargs rm -fr
+        ls | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | xargs rm -fr
     fi
 
-    echo -e "$TIMESTAMP - 拷贝服务包到部署目录 ..."
+    echo -e "`date '+%D %T'` - 拷贝服务包到部署目录 ..."
     cd $CURRENT_DIR
-    cp ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh ./mod/initdb.sh $DEST_DIR
+    cp ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh $DEST_DIR
     cd $DEST_DIR
     pwd
     ls -lh
@@ -158,7 +151,7 @@ function install_local() {
     fi
 
     if [[ "$APP_TYPE" == "spring_boot" ]]; then
-        echo -e "$TIMESTAMP - 重启服务 ..."
+        echo -e "`date '+%D %T'` - 重启服务 ..."
         sed -i "s/1024m/$JVM_HEAP/g" $APP_NAME.service
         sed -i "s#/opt#${DEST_DIR%/*}#g" $APP_NAME.service
         mv -f $APP_NAME.service /usr/lib/systemd/system/
@@ -171,25 +164,25 @@ function install_local() {
         # ./service.sh restart $APP_NAME $JVM_HEAP
         ps -ef | grep -v "grep" | grep $DEST_DIR/$APP_NAME
 
-        echo -e "$TIMESTAMP - 服务验证 ..."
+        echo -e "`date '+%D %T'` - 服务验证 ..."
         ./verify.sh $DEST_DIR/$APP_NAME
         echo -e ""
         systemctl status $APP_NAME.service
         exit $?
 
     elif [[ "$APP_TYPE" == "tomcat" ]]; then
-        echo -e "$TIMESTAMP - 重启服务 ..."
+        echo -e "`date '+%D %T'` - 重启服务 ..."
         ./tomcat.sh restart $TOMCAT_HOME
         ps -ef | grep -v "grep" | grep 'tomcat'| grep $TOMCAT_HOME
 
-        echo -e "$TIMESTAMP - 服务验证 ..."
+        echo -e "`date '+%D %T'` - 服务验证 ..."
         ./verify.sh $TOMCAT_HOME
         exit $?
 
     elif [[ "$APP_TYPE" == "static" ]]; then
         exit 0
     else
-        echo -e "$TIMESTAMP - 应用类型错误！[spring_boot/tomcat/static]"
+        echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
         exit -1
     fi
 }
@@ -201,18 +194,18 @@ function install_remote() {
         mkdir -pv $DEST_DIR
         cd $DEST_DIR
 
-        echo -e "$TIMESTAMP - 清理环境，保留日志和本地配置 ..."
+        echo -e "`date '+%D %T'` - 清理环境，保留日志和本地配置 ..."
         if [[ \"$APP_TYPE\" == \"tomcat\" ]]; then
             rm -fr ${APP_NAME%.*}*
             rm -fr build-*
             rm -fr *.sh
             rm -fr template*
         else
-            ls | grep -v "initdb.sh" | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | xargs rm -fr
+            ls | grep -v ".log" | grep -v "logs" | grep -v "archive" |grep -v "catlina.out" | grep -v "config" | grep -v "myconf" | grep -v "disconfig"| grep -v "static" | xargs rm -fr
         fi
     "
-    echo -e "$TIMESTAMP - 拷贝服务包到部署目录 ..."
-    scp -P$PORT ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh ./mod/initdb.sh root@$DEST_IP:/$DEST_DIR
+    echo -e "`date '+%D %T'` - 拷贝服务包到部署目录 ..."
+    scp -P$PORT ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh root@$DEST_IP:/$DEST_DIR
 
     ssh root@$DEST_IP -p$PORT "
 
@@ -228,7 +221,7 @@ function install_remote() {
         fi
 
         if [[ \"$APP_TYPE\" == \"spring_boot\" ]]; then
-            echo -e "$TIMESTAMP - 重启服务 ..."
+            echo -e "`date '+%D %T'` - 重启服务 ..."
             systemctl stop $APP_NAME.service
             sleep 1s
             sed -i \"s/1024m/$JVM_HEAP/g\" $APP_NAME.service
@@ -240,25 +233,25 @@ function install_remote() {
             sleep 1s
             ps -ef | grep -v "grep" | grep $DEST_DIR/$APP_NAME
 
-            echo -e "$TIMESTAMP - 服务验证 ..."
+            echo -e "`date '+%D %T'` - 服务验证 ..."
             ./verify.sh $DEST_DIR/$APP_NAME
             echo -e ""
             systemctl status $APP_NAME.service
             exit $?
 
         elif [[ \"$APP_TYPE\" == \"tomcat\" ]]; then
-            echo -e "$TIMESTAMP - 重启服务 ..."
+            echo -e "`date '+%D %T'` - 重启服务 ..."
             ./tomcat.sh restart $TOMCAT_HOME
             ps -ef | grep -v "grep" | grep 'tomcat'| grep $TOMCAT_HOME
 
-            echo -e "$TIMESTAMP - 服务验证 ..."
+            echo -e "`date '+%D %T'` - 服务验证 ..."
             ./verify.sh $TOMCAT_HOME
             exit $?
 
         elif [[ \"$APP_TYPE\" == \"static\" ]]; then
             exit 0
         else
-            echo -e "$TIMESTAMP - 应用类型错误！[spring_boot/tomcat/static]"
+            echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
             exit -1
         fi
 
@@ -267,10 +260,10 @@ function install_remote() {
 
 function install_pkg() {
     if [[ $DEST_IP == "127.0.0.1" ]]; then
-        echo -e "$TIMESTAMP - deploy to localhost ..."
+        echo -e "`date '+%D %T'` - deploy to localhost ..."
         install_local
     else
-        echo -e "$TIMESTAMP - deploy to $DEST_IP ..."
+        echo -e "`date '+%D %T'` - deploy to $DEST_IP ..."
         install_remote
     fi
 }

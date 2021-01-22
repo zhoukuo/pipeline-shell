@@ -19,7 +19,6 @@ USER=`whoami`
 CURRENT_DIR=`pwd`
 
 
-
 function verify_user() {
     echo -e "`date '+%D %T'` - verify user ..."; 
     if [[ "$USER" != "root" ]]; then

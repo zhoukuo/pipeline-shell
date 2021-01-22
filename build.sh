@@ -13,7 +13,7 @@ repodir=`TMP=${repourl##*/} && echo ${TMP%.*}`-$branch
 
 
 function gitclone() {
-    cd CURRENT_DIR
+    cd $CURRENT_DIR
     /bin/rm -fr $repodir
     git clone -b $branch http://${USER}:${PASSWD}@${repourl#*//} $repodir
     if [[ "$?" != "0" ]]; then

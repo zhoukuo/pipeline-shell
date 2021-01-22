@@ -3,6 +3,9 @@
 PARAM1=$1
 DEST_IP=127.0.0.1
 
+# 移除windows文件行尾的换行符
+sed -i 's/\r$//g' license
+
 APP1_IP=`cat license | grep app1.ip | awk -F = '{print $2}'`
 APP2_IP=`cat license | grep app2.ip | awk -F = '{print $2}'`
 HOS_NO=`cat license | grep hospital.no | awk -F = '{print $2}'`
@@ -18,7 +21,6 @@ PORT=${PORT:=8082}
 VERSION=latest
 NGINX=nginx-1.16.1.tar.gz
 CURRENT_DIR=`pwd`
-
 
 
 function install_wget(){

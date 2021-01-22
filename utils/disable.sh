@@ -163,7 +163,7 @@ function main() {
             chmod +x /etc/rc.d/rc.local
 
             echo never > /sys/kernel/mm/transparent_hugepage/enabled
-            echo never > /sys/kernel/mm/transparent_hugepage/defrag 
+            echo never > /sys/kernel/mm/transparent_hugepage/defrag
         "
     fi
 }

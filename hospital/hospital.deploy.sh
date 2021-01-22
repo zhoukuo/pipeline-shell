@@ -6,6 +6,9 @@ VERSION=latest
 BJCAROOT=bjcaroot.tar.gz
 JDK=jdk-8u221-linux-x64.tar.gz
 
+# 移除windows文件行尾的换行符
+sed -i 's/\r$//g' license
+
 DBIP=`cat license | grep db.ip | awk -F = '{print $2}'`
 DOMAIN=`cat license | grep cloud.domain | awk -F = '{print $2}'`
 USER=`cat license | grep db.user | awk -F = '{print $2}'`

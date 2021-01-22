@@ -5,6 +5,9 @@ DEST_IP=127.0.0.1
 REDIS=redis-6.0.9.tar.gz
 MYSQL=mysql-5.7.31.tar.gz
 
+# 移除windows文件行尾的换行符
+sed -i 's/\r$//g' license
+
 SOURCE_IP=`cat license | grep repo.ip | awk -F = '{print $2}'`
 PORT=`cat license | grep repo.port | awk -F = '{print $2}'`
 DBIP=`cat license | grep db.ip | awk -F = '{print $2}'`
@@ -12,7 +15,6 @@ DBIP=`cat license | grep db.ip | awk -F = '{print $2}'`
 SOURCE_IP=${SOURCE_IP:=47.95.231.203}
 PORT=${PORT:=8082}
 CURRENT_DIR=`pwd`
-
 
 
 function install_wget(){
@@ -42,6 +44,8 @@ function download() {
     wget -N http://$SOURCE_IP:$PORT/shared/release/3rdparty/wget/wget
     wget -N http://$SOURCE_IP:$PORT/shared/release/3rdparty/redis/$REDIS
     wget -N http://$SOURCE_IP:$PORT/shared/release/3rdparty/mysql/$MYSQL
+    wget -N http://$SOURCE_IP:$PORT/shared/release/3rdparty/mysql/libaio-0.3.109-13.el7.x86_64.rpm
+    wget -N http://$SOURCE_IP:$PORT/shared/release/3rdparty/mysql/numactl-libs-2.0.12-5.el7.x86_64.rpm
 
     mkdir $CURRENT_DIR/sql -pv
     cd $CURRENT_DIR/sql
@@ -52,19 +56,19 @@ function download() {
 }
 
 function check_license() {
-    # optional
+    # required
     if [[ ! -f "license" ]]; then
         echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license file not found, use default server !!!\e[00m"
         exit -1
     fi
 
-    # optional
+    # required
     if [[ "$DBIP" == "x.x.x.x" ]]; then
         echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: db.ip !!!\e[00m"
         exit -1
     fi
 
-    # optional
+    # required
     if [[ "$APP1_IP" == "x.x.x.x" ]]; then
         echo -e "`date '+%D %T'` - \e[00;31m[ERROR] license info invalid: app1.ip !!!\e[00m"
         exit -1
@@ -72,6 +76,7 @@ function check_license() {
 }
 
 function main() {
+
     install_wget
 
     # used for offline deploy

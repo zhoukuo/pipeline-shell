@@ -52,6 +52,21 @@ function get_pkg() {
     else
         echo -e "`date '+%D %T'` - $APP_NAME is found, install from local ..."
     fi
+
+    if [[ ! -f "libaio-0.3.109-13.el7.x86_64.rpm" ]]; then
+        echo -e "`date '+%D %T'` - libaio-0.3.109-13.el7.x86_64.rpm not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/$SOURCE_DIR/libaio-0.3.109-13.el7.x86_64.rpm
+    else
+        echo -e "`date '+%D %T'` - libaio-0.3.109-13.el7.x86_64.rpm is found, install from local ..."
+    fi
+
+    if [[ ! -f "numactl-libs-2.0.12-5.el7.x86_64.rpm" ]]; then
+        echo -e "`date '+%D %T'` - numactl-libs-2.0.12-5.el7.x86_64.rpm not found in local, downloading ..."
+        wget http://$SOURCE_IP:${PORT}/shared/$SOURCE_DIR/numactl-libs-2.0.12-5.el7.x86_64.rpm
+    else
+        echo -e "`date '+%D %T'` - numactl-libs-2.0.12-5.el7.x86_64.rpm is found, install from local ..."
+    fi
+    
     cd $CURRENT_DIR
 }
 
@@ -95,6 +110,10 @@ function install_local() {
         echo -e "`date '+%D %T'` - \e[00;31m[ERROR] mysql is installed at /usr/local/mysql/, please backup data and remove this folder!\e[00m"
         exit -1
     fi
+
+    rpm -ivh pkg/libaio-0.3.109-13.el7.x86_64.rpm
+    rpm -ivh pkg/numactl-libs-2.0.12-5.el7.x86_64.rpm
+
     mkdir $DEST_DIR
     tar -xf ./pkg/$APP_NAME -C $DEST_DIR
     chown -R mysql:mysql $DEST_DIR

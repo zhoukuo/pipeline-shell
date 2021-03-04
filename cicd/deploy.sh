@@ -3,7 +3,7 @@
 SOURCE_IP=$1
 SOURCE_DIR=$2
 APP_NAME=$3
-APP_TYPE=$4         #spring_boot/tomcat/static
+APP_TYPE=$4         #maven/tomcat/static
 DEST_IP=$5
 DEST_DIR=$6
 JVM_HEAP=$7
@@ -24,9 +24,14 @@ function verify_user() {
 
 function verify_parameter() {
 
-    if [[ "$APP_TYPE" != "spring_boot" ]] && [[ "$APP_TYPE" != "tomcat" ]] && [[ "$APP_TYPE" != "static" ]]; then
-        echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
+    if [[ "$APP_TYPE" != "maven" ]] && [[ "$APP_TYPE" != "tomcat" ]] && [[ "$APP_TYPE" != "static" ]]; then
+        echo -e "`date '+%D %T'` - 应用类型错误！[maven/tomcat/static]"
         exit -1
+    fi
+
+    if [[ "$SPUG_HOST_NAME" == "$SOURCE_IP" ]]; then
+        echo "`date '+%D %T'` 构建/出库操作，跳过部署步骤 ..."
+        exit 0
     fi
 
     if [[ "$SOURCE_IP" != "47.95.231.203" ]] && [[ "$SOURCE_IP" != "192.168.1.17" ]] && [[ "$SOURCE_IP" != "192.168.126.39" ]]; then
@@ -150,7 +155,7 @@ function install_local() {
         ls -lh
     fi
 
-    if [[ "$APP_TYPE" == "spring_boot" ]]; then
+    if [[ "$APP_TYPE" == "maven" ]]; then
         echo -e "`date '+%D %T'` - 重启服务 ..."
         sed -i "s/1024m/$JVM_HEAP/g" $APP_NAME.service
         sed -i "s#/opt#${DEST_DIR%/*}#g" $APP_NAME.service
@@ -182,7 +187,7 @@ function install_local() {
     elif [[ "$APP_TYPE" == "static" ]]; then
         exit 0
     else
-        echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
+        echo -e "`date '+%D %T'` - 应用类型错误！[maven/tomcat/static]"
         exit -1
     fi
 }
@@ -220,7 +225,7 @@ function install_remote() {
             ls -lh
         fi
 
-        if [[ \"$APP_TYPE\" == \"spring_boot\" ]]; then
+        if [[ \"$APP_TYPE\" == \"maven\" ]]; then
             echo -e "`date '+%D %T'` - 重启服务 ..."
             systemctl stop $APP_NAME.service
             sleep 1s
@@ -251,7 +256,7 @@ function install_remote() {
         elif [[ \"$APP_TYPE\" == \"static\" ]]; then
             exit 0
         else
-            echo -e "`date '+%D %T'` - 应用类型错误！[spring_boot/tomcat/static]"
+            echo -e "`date '+%D %T'` - 应用类型错误！[maven/tomcat/static]"
             exit -1
         fi
 

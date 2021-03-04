@@ -5,23 +5,20 @@
 version=latest
 #version=1.0.0
 # 服务部署在哪个节点上，根据医院实际情况修改
-dest_ip=$1
+dest_ip=192.168.141.2
 # 服务布署在哪个目录，不要修改
-dest_dir=/opt/doctor
+dest_dir=/var/www/html/wjw/supervise
 # 服务包名称，不要修改
-app_name=doctor.jar
+app_name=supervise.tar.gz
 # 从哪个服务器获取服务包，不要修改
-source_dir=release/hospital-in/hospital/${version}/pkg
-# 从哪个目录获取服务包，不要修改
 source_ip=47.95.231.203
+# 从哪个目录获取服务包，不要修改
+source_dir=release/卫计委监管平台/四川省/${version}/部署包
 # 服务类型，不要修改
-app_type=spring_boot
+app_type=static
 # 堆内存大小，不要修改
 jvm_heap=1024m
 
-if [[ ! -f "./mod/deploy.sh" ]]; then
-    wget http://$source_ip:8082/shared/devops/deploy.sh -O ./mod/deploy.sh;
-fi
-sh ./mod/deploy.sh $source_ip $source_dir $app_name $app_type $dest_ip $dest_dir $jvm_heap;
+wget http://$source_ip:8082/shared//devops/deploy.sh -O deploy.sh
+sh deploy.sh $source_ip $source_dir $app_name $app_type $dest_ip $dest_dir $jvm_heap
 exit
-

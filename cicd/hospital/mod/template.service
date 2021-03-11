@@ -1,0 +1,16 @@
+
+[Unit]
+Description=template
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/
+ExecStart=/opt/servicectl.sh start 1024m
+ExecReload=/opt/servicectl.sh restart 1024m
+ExecStop=/opt/servicectl.sh stop
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

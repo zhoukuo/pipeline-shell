@@ -58,11 +58,11 @@ function get_mod() {
     mkdir $CURRENT_DIR/mod -pv
     cd $CURRENT_DIR/mod
 
-    if [[ ! -f "$APP_NAME.service" ]]; then
-        echo -e "`date '+%D %T'` - $APP_NAME.service not found in local, downloading ..."
-        wget http://$SOURCE_IP:8082/shared/devops/hospital/mod/$APP_NAME.service
+    if [[ ! -f "template.service" ]]; then
+        echo -e "`date '+%D %T'` - template.service not found in local, downloading ..."
+        wget http://$SOURCE_IP:8082/shared/devops/hospital/mod/template.service
     else
-        echo -e "`date '+%D %T'` - $APP_NAME.service is found ..."
+        echo -e "`date '+%D %T'` - template.service is found ..."
     fi
 
     if [[ ! -f "freelogin.sh" ]]; then
@@ -143,7 +143,7 @@ function install_local() {
 
     echo -e "`date '+%D %T'` - 拷贝服务包到部署目录 ..."
     cd $CURRENT_DIR
-    cp ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh $DEST_DIR
+    cp ./pkg/$APP_NAME ./mod/template.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh $DEST_DIR
     cd $DEST_DIR
     pwd
     ls -lh
@@ -157,8 +157,9 @@ function install_local() {
 
     if [[ "$APP_TYPE" == "maven" ]]; then
         echo -e "`date '+%D %T'` - 重启服务 ..."
+        mv template.service $APP_NAME.service
         sed -i "s/1024m/$JVM_HEAP/g" $APP_NAME.service
-        sed -i "s#/opt#${DEST_DIR%/*}#g" $APP_NAME.service
+        sed -i "s#/opt#${DEST_DIR}#g" $APP_NAME.service
         mv -f $APP_NAME.service /usr/lib/systemd/system/
         systemctl daemon-reload
         systemctl enable $APP_NAME.service
@@ -210,7 +211,7 @@ function install_remote() {
         fi
     "
     echo -e "`date '+%D %T'` - 拷贝服务包到部署目录 ..."
-    scp -P$PORT ./pkg/$APP_NAME ./mod/$APP_NAME.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh root@$DEST_IP:/$DEST_DIR
+    scp -P$PORT ./pkg/$APP_NAME ./mod/$template.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh root@$DEST_IP:/$DEST_DIR
 
     ssh root@$DEST_IP -p$PORT "
 
@@ -229,8 +230,9 @@ function install_remote() {
             echo -e "`date '+%D %T'` - 重启服务 ..."
             systemctl stop $APP_NAME.service
             sleep 1s
+            mv template.service $APP_NAME.service
             sed -i \"s/1024m/$JVM_HEAP/g\" $APP_NAME.service
-            sed -i \"s#/opt#${DEST_DIR%/*}#g\" $APP_NAME.service
+            sed -i \"s#/opt#${DEST_DIR}#g\" $APP_NAME.service
             mv -f $APP_NAME.service /usr/lib/systemd/system/
             systemctl daemon-reload
             systemctl enable $APP_NAME.service

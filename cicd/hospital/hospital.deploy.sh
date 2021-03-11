@@ -50,11 +50,12 @@ function download() {
     wget -N http://$SOURCE_IP:$PORT/shared/devops/3rdparty/wget.install.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/sethosts.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/patient.deploy.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/patient.jar.service
+    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/template.service
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/patient.jar.service
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/doctor.deploy.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/doctor.jar.service
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/doctor.jar.service
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hosadmin.deploy.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hosAdmin.jar.service
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hosAdmin.jar.service
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/application.properties
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/init.properties
     chmod 755 *.sh

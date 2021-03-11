@@ -50,12 +50,13 @@ function download() {
     wget -N http://$SOURCE_IP:$PORT/shared/devops/3rdparty/bjcaroot.install.sh 
     wget -N http://$SOURCE_IP:$PORT/shared/devops/3rdparty/jdk.install.sh
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/sethosts.sh
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/gateway.deploy.sh 
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/gateway.jar.service 
+    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/gateway.deploy.sh
+    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/template.service 
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/gateway.jar.service 
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hisca.deploy.sh 
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hisca.jar.service 
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/hisca.jar.service 
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/robot.deploy.sh 
-    wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/robot.jar.service
+    # wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/robot.jar.service
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/application-custom.properties
     wget -N http://$SOURCE_IP:$PORT/shared/devops/hospital/mod/redis.properties
     chmod 755 *.sh

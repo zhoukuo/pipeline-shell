@@ -211,7 +211,7 @@ function install_remote() {
         fi
     "
     echo -e "`date '+%D %T'` - 拷贝服务包到部署目录 ..."
-    scp -P$PORT ./pkg/$APP_NAME ./mod/$template.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh root@$DEST_IP:/$DEST_DIR
+    scp -P$PORT ./pkg/$APP_NAME ./mod/template.service ./mod/service.sh ./mod/servicectl.sh ./mod/verify.sh root@$DEST_IP:/$DEST_DIR
 
     ssh root@$DEST_IP -p$PORT "
 

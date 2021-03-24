@@ -22,19 +22,19 @@ else
 fi
 
 
-echo -e "\n`date '+%D %T'` - 正在收集布署文件..."
-rm $source_dir -fr
-mkdir $source_dir
-cd $source_dir
+# echo -e "\n`date '+%D %T'` - 正在收集布署文件..."
+# rm $source_dir -fr
+# mkdir $source_dir
+# cd $source_dir
 
-if [[ "$app_name" =~ ".tar" ]];then
-    tar -zcf $app_name -C ../output . --exclude=output --exclude=.git --exclude=publish.sh
-elif [[ -f "../output/$app_name" ]]; then
-    cp ../output/$app_name ./
-else
-    echo "$target/$app_name not found!"
-    exit -1
-fi
+# if [[ "$app_name" =~ ".tar" ]];then
+#     tar -zcf $app_name -C ../output . --exclude=output --exclude=.git --exclude=publish.sh
+# elif [[ -f "../output/$app_name" ]]; then
+#     cp ../output/$app_name ./
+# else
+#     echo "$target/$app_name not found!"
+#     exit -1
+# fi
 
 ls $source_dir -lh
 
